@@ -1,0 +1,2 @@
+pynautobot==1.4.0
+ntc-templates==3.2.0

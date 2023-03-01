@@ -180,7 +180,7 @@ def feed_ip_addresses(data):
             print(f'{counter} IP-Addresses added')
 
 def find_int_type(data):
-    '''Needet to return supported Iterface - Type 
+    '''Needet to return supported Interface - Type 
     virtual, lag,100base-tx, 1000base-t, 2.5gbase-t, 5gbase-t, 10gbase-t, 10gbase-cx4,1000base-x-gbic,1000base-x-sfp,10gbase-x-sfpp,
     10gbase-x-xfp, 10gbase-x-xenpak, 10gbase-x-x2, 25gbase-x-sfp28, 40gbase-x-qsfpp, 50gbase-x-sfp28, 100gbase-x-cfp, 100gbase-x-cfp2,
     200gbase-x-cfp2, 100gbase-x-cfp4, 100gbase-x-cpak, 100gbase-x-qsfp28, 200gbase-x-qsfp56, 400gbase-x-qsfpdd, 400gbase-x-osfp,

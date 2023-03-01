@@ -4,6 +4,9 @@
         docker-compose up
 
 This brings up containerized nautobot envireonment. Login with admin admin to http://localhost:8080 is possible
+## Install required Python Libraries
+
+        pip install -r requirement.txt
 
 ## Initialize Nautopot 
 
@@ -16,6 +19,10 @@ This initialize nautobot with default site, and rfc1918 prefixes etc.
 * Copy Networkdump.zip file into Folder
 * run 
 
-        python parse.py
+        python feed_nautobot.py
 
-* This unzipps Networkdump.zip, parses ist and feed Nautobot
+* This unzipps Networkdump.zip, parses it and feed Nautobot
+* This takes a while
+
+After parsing you should see Devices, VLANs, IP-Prefies and IP-Addresses with it's MAC address
+

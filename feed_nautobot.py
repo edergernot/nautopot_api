@@ -135,16 +135,21 @@ def parse_file(file):
 
 def feed_vlans_nautobot(vlans):
     print('Feeding Nautobot with VLANs')
+    vlan_added=[]
     for vlan in vlans:
-        ID=(int(vlan['vlan_id']))
-        check_vlan=nautobot.ipam.vlans.get(vid=ID)
+        vlan_id=(int(vlan['vlan_id']))
+        if vlan_id in vlan_added: # Vlan allready added or exist
+            continue
+        check_vlan=nautobot.ipam.vlans.get(vid=vlan_id)
         if check_vlan!=None: # Vlan allready exist
+            vlan_added.append(vlan_id)
             continue
         if vlan['status']!='active': # Vlan is not active
             continue
         site_id=nautobot.dcim.sites.get(slug='autosite')
-        nautobot.ipam.vlans.create(vid=ID, name=vlan['name'], status=vlan['status'], site=site_id.id)
-        print(f'VLAN{ID}  is created')
+        nautobot.ipam.vlans.create(vid=vlan_id, name=vlan['name'], status=vlan['status'], site=site_id.id)
+        vlan_added.append(vlan_id)
+        print(f'VLAN{vlan_id}  is created')
 
 def feed_prefix(data):
     print('feeding prefixes to Nautobot')

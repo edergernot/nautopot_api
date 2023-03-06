@@ -1,3 +1,6 @@
+'''Used to delete Nautobot Conainers
+This is usefull for a fresh import of NetworkDump.zip'''
+
 import subprocess
 subprocess.run( ['docker', 'system', 'prune', '-a', '-f' ] )
 images = []

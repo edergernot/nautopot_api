@@ -3,7 +3,9 @@
 
         docker-compose up
 
-This brings up containerized nautobot envireonment. Login with username admin and pasword admin to http://localhost:8080 is possible. Do not use this settings in production environment. Modify 'local.env' for your need.
+This brings up containerized nautobot environment. Login with username admin and pasword admin to http://localhost:8080 is possible. 
+
+Do not use this settings in production environment. Modify 'local.env' for your need.
 For details about nautobot see https://docs.nautobot.com/projects/core/en/stable/. Modify api_login.py for your nautobot installation.
 
 ## Install required Python Libraries

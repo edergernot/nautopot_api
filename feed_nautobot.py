@@ -5,6 +5,7 @@ import os
 import shutil
 from ntc_templates.parse import parse_output
 import pynautobot
+import re
 
 UPLOAD_FOLDER = './input_files'
 files_to_parse = []
@@ -58,6 +59,13 @@ def check_platform(output):
         return ('cisco_asa')
     else:
         return ('cisco_ios')
+    
+def short_interfacename(int_name):
+    nums=re.findall('\d+',int_name)
+    port_num = '/'.join(nums)
+    int_type=int_name[:2]
+    shortname=int_type+port_num
+    return(shortname)
 
 def feed_device_model(output,platform):
     if "Cisco" in output:
@@ -243,6 +251,57 @@ def feed_interfaces(data):
         count+=1
         if count%10 == 0:
             print(f'{count} interfaces created')
+
+def feed_cdp_nei(data):
+    print('Feeding CDP-Neighbors')
+    for line in data:
+        local_interface=''
+        remote_interfaces=''
+        interfaces =[]
+        remote_interfaces=[]
+        print(f'DEBUG CDP-Line: {line}')  # debug
+        hostname=line['Devicename']
+        remote_hostname=line['destination_host'].split('.')[0]  # Use only Hostpart, if fqdn is returned
+        local_port=short_interfacename(line['local_port'])
+        remote_port=short_interfacename(line['remote_port'])
+        interfaces=nautobot.dcim.interfaces.filter(name=local_port)
+        for interface in interfaces:
+            # print (f"DEBUG in Interface-Loop: {interface['device']['name']}")  # debug
+            if hostname == interface['device']['name']:
+                local_interface = interface
+                # print (f"DEBUG in Local-Interface: {interface['id']}")  # debug
+                break  # Interface on device found
+        remote_device=nautobot.dcim.devices.get(name=remote_hostname)
+        if remote_device == None: # Remote Device not in Nautobot, just change Description
+            descripton= local_interface['description']
+            local_interface.decsription=f'CDP-Neighbor: {remote_device}\n{descripton}'
+            local_interface.save()
+            continue
+        remote_interfaces=nautobot.dcim.interfaces.filter(name=remote_port)
+        for interface in remote_interfaces:
+            if remote_hostname in interface['device']['name']:
+                remote_interface = interface
+                break  # Interface on device found
+        cables = nautobot.dcim.cables.all()
+        for cable in cables:
+            cable_a = cable['termination_a_id']
+            cable_b = cable['termination_b_id']
+            # print (f'DEBUG cable_a:  {cable_a}')  # debug
+            # print (f'DEBUG cable_b:  {cable_b}')  # debug
+            if cable_a == local_interface['id']:
+                cable_exist = True # Cable in one direction exist
+                break
+            elif cable_b == local_interface['id']:
+                cable_exist = True  # Cable in the other direction exist
+                break
+            try:
+                nautobot.dcim.cables.create(termination_a_type="dcim.interface", termination_b_type="dcim.interface", status = 'connected',
+                                            termination_a_id=local_interface['id'], termination_b_id=remote_interface['id'])
+                print (f'CDP Connection {hostname}:{remote_hostname} added')
+            except Exception as E:
+                print (f'Error in adding Cable:\n{E}')
+
+        
         
 def feed_nautobot(dump_data: dict):
     # Add devices
@@ -265,11 +324,10 @@ def feed_nautobot(dump_data: dict):
     feed_interfaces(dump_data["show_interfaces_status"])
     print ('Interfaces done')
 
-    
+    #Add CDP-Neighbors to Interfaces 
+    feed_cdp_nei(dump_data["show_cdp_neighbors_detail"])
+    print ('CDPs and Cabled added')
    
-
-
-
 
 ########################################################
 
@@ -284,7 +342,10 @@ if __name__ == '__main__':
     feed_nautobot(dump_data)
 
 #    print('*'*40)
-#    print(dump_data["show_interfaces_status"])
+#    print(dump_data.keys())
+#    print()
+
+
 
 
    

@@ -6,14 +6,15 @@ import shutil
 from ntc_templates.parse import parse_output
 import pynautobot
 import re
+import api_login
 
 UPLOAD_FOLDER = './input_files'
 files_to_parse = []
 dump_data = {}
 
-HOST="127.0.0.1"
-PORT="8080"
-TOKEN="14BADCA122B5D74D7DB91FA3A0261970"
+HOST=api_login.HOST
+PORT=api_login.PORT
+TOKEN=api_login.TOKEN
 nautobot = pynautobot.api(url=f"http://{HOST}:{PORT}", token=TOKEN, threading=True,)
 
 

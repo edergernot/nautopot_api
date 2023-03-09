@@ -3,10 +3,11 @@ Used to create default RFC1918 Prefix and default Site as well as default RIR
 '''
 
 import pynautobot
+import api_login
 
-HOST="127.0.0.1"
-PORT="8080"
-TOKEN="14BADCA122B5D74D7DB91FA3A0261970"
+HOST=api_login.HOST
+PORT=api_login.PORT
+TOKEN=api_login.TOKEN
 nautobot = pynautobot.api(url=f"http://{HOST}:{PORT}", token=TOKEN)
 
 # Create AutoSite 

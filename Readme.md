@@ -20,7 +20,8 @@ This initialize nautobot with default site, and rfc1918 prefixes etc.
 
 
 ## Parse and feed Nautobot
-* Copy Networkdump.zip file into Folder
+* Create Folder "input_files"
+* Copy Networkdump.zip file into input_files folder
 * run 
 
         python feed_nautobot.py
